@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#155eef">
+  <meta name="description" content="MATHERZAT — мұғалім басқаратын интерактивті математикалық тест платформасы.">
+  <title>MATHERZAT — Live тест</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="MATHERZAT басты беті">
+      <span class="brand-mark">M</span>
+      <span><strong>MATHERZAT</strong><small>LIVE QUIZ · ИНТЕРАКТИВТІ БАҒАЛАУ</small></span>
+    </a>
+    <div class="top-right"><span id="connectionBadge" class="connection"><i></i> Серверге қосылуда</span></div>
+  </header>
+
+  <main class="shell">
+    <section id="entryView" class="entry-layout">
+      <div class="welcome-card">
+        <span class="eyebrow">БІЛІМ · ЖЫЛДАМДЫҚ · НӘТИЖЕ</span>
+        <h1>Математиканы<br><span>жаңа форматта</span> бағалаңыз.</h1>
+        <p>Мұғалім тестті басқарады, оқушылар QR кодпен қосылып, өз құрылғысынан жауап береді. Нәтиже бірден жаңартылады.</p>
+        <div class="feature-row"><span>✓ QR арқылы кіру</span><span>✓ Live синхрондау</span><span>✓ Автоматты ұпай</span></div>
+        <div class="welcome-orbit orbit-one"></div><div class="welcome-orbit orbit-two"></div>
+      </div>
+      <div class="entry-card">
+        <div class="role-switch" role="tablist" aria-label="Кіру түрі">
+          <button class="role-tab active" data-role="student" role="tab" aria-selected="true">Оқушы</button>
+          <button class="role-tab" data-role="teacher" role="tab" aria-selected="false">Мұғалім</button>
+        </div>
+        <form id="studentJoinForm" class="entry-form">
+          <div class="form-heading"><span class="form-icon">✦</span><h2>Тестке қосылу</h2><p>Мұғалім берген QR кодты сканерлеңіз немесе бөлме кодын енгізіңіз.</p></div>
+          <label for="roomCodeInput">Бөлме коды</label>
+          <input id="roomCodeInput" name="code" class="code-input" maxlength="6" autocomplete="off" placeholder="Мысалы: 8K4P2A" required>
+          <label for="studentNameInput">Аты-жөніңіз</label>
+          <input id="studentNameInput" name="name" maxlength="60" autocomplete="name" placeholder="Аты-жөніңізді енгізіңіз" required>
+          <button class="btn btn-primary btn-wide" type="submit">Тестке кіру <span>→</span></button>
+          <p class="form-note">Жауаптарыңыз жеке қабылданады. Басқа оқушылар сіздің таңдауыңызды көрмейді.</p>
+        </form>
+        <form id="teacherLoginForm" class="entry-form hidden">
+          <div class="form-heading"><span class="form-icon">⌘</span><h2>Мұғалім кабинеті</h2><p>Тестті жасау және басқару үшін құпиясөзді енгізіңіз.</p></div>
+          <label for="teacherPassword">Мұғалім құпиясөзі</label>
+          <input id="teacherPassword" type="password" autocomplete="current-password" placeholder="Құпиясөз" required>
+          <button class="btn btn-primary btn-wide" type="submit">Кіру <span>→</span></button>
+          <p class="form-note">Құпиясөзді сайт әкімшісі сервер баптауында орнатады.</p>
+        </form>
+      </div>
+    </section>
+
+    <section id="teacherView" class="hidden">
+      <div class="page-heading">
+        <div><span class="eyebrow">МҰҒАЛІМ ПАНЕЛІ</span><h1>Тестті басқару</h1><p>Сұрақтарды дайындаңыз, QR кодты көрсетіңіз және ойынды басқарыңыз.</p></div>
+        <button class="btn btn-light" id="teacherLogout">Шығу ↗</button>
+      </div>
+      <div class="dashboard-grid">
+        <section class="card editor-card">
+          <div class="section-title"><div><span class="eyebrow">01 / ТЕСТ ҚҰРАСТЫРУ</span><h2>Сұрақтар</h2></div><span class="soft-badge" id="questionCountBadge">0 сұрақ</span></div>
+          <label for="testTitleInput">Тест атауы</label>
+          <input id="testTitleInput" maxlength="100" value="Математика тесті">
+          <div id="questionEditor" class="question-editor"></div>
+          <div class="editor-actions"><button class="btn btn-light" id="addQuestionBtn">＋ Сұрақ қосу</button><button class="btn btn-primary" id="createRoomBtn">Тест бөлмесін ашу</button><button class="btn btn-primary hidden" id="saveQuestionsBtn">Өзгерістерді сақтау</button></div>
+          <p class="small-note">Оңай — 30 сек · Орташа — 40 сек · Қиын — 45 сек. Әр дұрыс жауапқа 1 ұпай беріледі.</p>
+        </section>
+
+        <section class="card room-card">
+          <div class="section-title"><div><span class="eyebrow">02 / ОҚУШЫЛАРДЫ ҚОСУ</span><h2>Тест бөлмесі</h2></div><span id="roomStatusBadge" class="status-badge">Әлі ашылған жоқ</span></div>
+          <div id="noRoomNotice" class="empty-state"><div class="empty-icon">▦</div><h3>Бөлме әлі жасалмады</h3><p>Алдымен сұрақтарды енгізіп, «Тест бөлмесін ашу» батырмасын басыңыз.</p></div>
+          <div id="roomActivePanel" class="hidden">
+            <div class="room-code-block"><span>ОҚУШЫЛАРҒА АРНАЛҒАН КОД</span><strong id="roomCodeText">—— ——</strong><button id="copyCodeBtn" class="copy-btn" aria-label="Кодты көшіру">Көшіру</button></div>
+            <div class="qr-area"><div id="qrImageWrap" class="qr-image-wrap"><div class="qr-placeholder">QR</div></div><div><strong>QR кодты сканерлеңіз</strong><p>Оқушылар телефон камерасымен сканерлеп, аты-жөнін енгізеді.</p><a id="joinLink" href="#" target="_blank" rel="noopener">Қосылу сілтемесін ашу ↗</a></div></div>
+            <div class="stats-grid">
+              <div class="mini-stat"><strong id="participantCount">0</strong><span>Қатысушы</span></div>
+              <div class="mini-stat blue"><strong id="teamOneCount">0</strong><span>🔵 1-топ</span></div>
+              <div class="mini-stat green"><strong id="teamTwoCount">0</strong><span>🟢 2-топ</span></div>
+            </div>
+            <div class="participants-heading"><strong>Күту бөлмесі</strong><span id="participantHint">Оқушыларды күтіңіз</span></div>
+            <div id="participantList" class="participant-list"><p class="muted">Әзірге оқушы қосылған жоқ.</p></div>
+            <div class="room-actions"><button class="btn btn-light" id="randomizeTeamsBtn">Топтарға бөлу</button><button class="btn btn-success" id="startQuizBtn">START · Бастау</button><button class="btn btn-primary hidden" id="nextQuestionBtn">Келесі сұрақ →</button><button class="btn btn-danger hidden" id="finishQuizBtn">Тестті аяқтау</button></div>
+          </div>
+          <div id="teacherLivePanel" class="live-panel hidden">
+            <div class="live-top"><span class="live-dot"></span><strong id="liveQuestionLabel">1-сұрақ</strong><span id="teacherTimer" class="live-timer">00:30</span></div>
+            <h3 id="teacherQuestionText"></h3>
+            <div id="teacherAnswerOptions" class="teacher-options"></div>
+            <div class="progress-track"><span id="questionProgress"></span></div>
+            <p class="small-note" id="answeredCountText">Жауап бергендер: 0</p>
+          </div>
+        </section>
+      </div>
+      <section id="teacherResults" class="card results-card hidden">
+        <div class="section-title"><div><span class="eyebrow">03 / ҚОРЫТЫНДЫ</span><h2>Тест нәтижелері</h2></div><span class="soft-badge">LIVE рейтинг</span></div>
+        <div class="result-stats"><div><span>🔵 1-топ орташа ұпайы</span><strong id="teamOneAverage">0.00</strong></div><div><span>🟢 2-топ орташа ұпайы</span><strong id="teamTwoAverage">0.00</strong></div><div><span>Жеңімпаз</span><strong id="winningTeam">—</strong></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Орын</th><th>Оқушы</th><th>Топ</th><th>Ұпай</th><th>Дұрыс жауап</th></tr></thead><tbody id="rankingBody"></tbody></table></div>
+      </section>
+    </section>
+
+    <section id="studentView" class="hidden">
+      <div class="student-head"><div><span class="eyebrow">ОҚУШЫ КАБИНЕТІ</span><h1 id="studentTestTitle">Математика тесті</h1><p id="studentGreeting">Сәттілік!</p></div><div class="student-score"><span>СЕНІҢ ҰПАЙЫҢ</span><strong id="studentScore">0</strong></div></div>
+      <div class="student-progress"><span id="studentProgressBar"></span></div>
+      <div id="studentWaiting" class="card waiting-card"><div class="waiting-illustration">⌛</div><h2>Мұғалімді күтіңіз</h2><p>Тест басталған кезде сұрақ осы жерде автоматты түрде пайда болады.</p><span class="waiting-pulse">Бөлмеге қосылдыңыз</span></div>
+      <div id="studentQuestionPanel" class="card student-question-card hidden">
+        <div class="question-meta"><span id="studentQuestionNumber" class="soft-badge">1 / 10</span><span id="studentDifficulty" class="difficulty-badge">Оңай</span><div class="student-timer"><span>Қалған уақыт</span><strong id="studentTimer">00:30</strong></div></div>
+        <h2 id="studentQuestionText"></h2>
+        <div id="studentOptions" class="student-options"></div>
+        <div id="studentAnswerMessage" class="answer-message" aria-live="polite">Бір дұрыс жауапты таңдаңыз.</div>
+      </div>
+      <div id="studentFinished" class="card finished-card hidden"><div class="finished-icon">✓</div><span class="eyebrow">ТЕСТ АЯҚТАЛДЫ</span><h2>Жарайсыз!</h2><p id="studentFinalText">Нәтижеңіз сақталды.</p><div id="studentReview" class="review-list"></div></div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <footer><strong>MATHERZAT</strong><span>Математика сабағындағы интерактивті бағалау</span></footer>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js" defer></script>
+</body>
+</html>
